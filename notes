@@ -1,0 +1,45 @@
+[1] cart :
+1.puting in the cart
+2.removing from the cart
+3.showing the cart
+4.see the total price
+5.see the total quantity
+6.in the all products(product grid) show how much product of this products in the cart
+7.if the product is in the cart show the quantity of this product in the cart
+8.if the product is in the cart show the total price of this product in the cart
+9.if the product is in the cart show the total price of all products in the cart
+10.if cart is empty show the message "your cart is empty and a button to go to conitue shopping"
+
+[2] wishlist :
+1.puting in the wishlist
+2.removing from the wishlist
+3.showing the wishlist
+
+[3] router:
+1.convert all pages to routes [done]
+3.convert any a href to router [done]
+
+[4] similar products :
+1.show similar product under the porduct detail [done]
+
+[5] product name:
+1.if i clicked the product name it go to product detail [done]
+
+[6] categories filter:
+1.filter products after option of category menu choosen
+2.css also and look for the addida drop down filter
+
+[7] lazy fteching. [done]
+
+[8]loading screen icon. [done]
+
+[9] css:
+1.in the mobile sizes it shows a squared products like i can see 4 products at a time not just one [done]
+2.search bar desging and responsive [done]
+
+[10] redux and reducers :
+1.create redux for all needed pages[done]
+
+[11]about page :
+1.show the photo[done]
+2.all products button link [done]
