@@ -7,29 +7,21 @@ const wishlistReducer = createSlice({
 
     },
     reducers: {
-        rdx_add_item_To_wishlist: (state, action) => {
+        rdx_toggle_wishlist_item: (state, action) => {
             const product = action.payload;
 
             const existItem = state.wishlistItems.find(wishlistItem => wishlistItem.id === product.id)
 
-            if (!existItem) {
-
-                const newProduct = { ...product }
-
-                state.wishlistItems.push(newProduct);
-            }
-
-
+            if (!existItem)
+                state.wishlistItems.push(product);
+            else
+                state.wishlistItems = state.wishlistItems.filter(wishlistItem => wishlistItem.id !== product.id);
         },
-        rdx_remove_item_from_wishlist: (state, action) => {
-            const id = action.payload;
 
-            state.wishlistItems = state.wishlistItems.filter(wishlistItem => wishlistItem.id !== id);
-        }
     }
 })
 
 export default wishlistReducer.reducer;
 
-export const { rdx_add_item_to_wishlist, rdx_remove_item_from_wishlist } = wishlistReducer.actions;
+export const { rdx_toggle_wishlist_item } = wishlistReducer.actions;
 

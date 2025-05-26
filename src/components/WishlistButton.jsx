@@ -1,20 +1,29 @@
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { rdx_add_item_to_wishlist, rdx_remove_item_from_wishlist } from '../redux/wishlistReducer';
+import { rdx_toggle_wishlist_item } from '../redux/wishlistReducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
-export default function WishlistButton(product) {
+export default function WishlistButton({ product }) {
+
+    const [existsItem, setExistsItem] = useState(false);
     console.log("wishlist rendred");
     const { wishlistItems } = useSelector(store => store.wishlistReducer);
-    const existsItem = wishlistItems.find(item => item.id === product.id);
+
+    
+    useEffect(() => {
+        setExistsItem(wishlistItems.find(item => item.id === product.id));
+        console.log('UseEffect fired')
+        console.log("wishlist items", wishlistItems);
+    }, [wishlistItems])
+
     const dispatch = useDispatch();
-    console.log("wishlist item", wishlistItems);
+    // console.log("wishlist items", wishlistItems);
+    console.log("product", product);
+    console.log("existsItem", existsItem);
 
     const handleToggleWishlist = () => {
-        if (existsItem) {
-            dispatch(rdx_remove_item_from_wishlist(product));
-        } else {
-            dispatch(rdx_add_item_to_wishlist(product));
-        }
+        dispatch(rdx_toggle_wishlist_item(product));
     };
 
     return (

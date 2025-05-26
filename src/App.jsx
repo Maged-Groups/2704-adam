@@ -13,6 +13,7 @@ import { FaShoppingCart } from 'react-icons/fa';
 import JamilaClosetLoader from './components/JamilaClosetLoader';
 import Wishlist from './components/Wishlist';
 import './App.css'
+import ByCat from './components/products/ByCat';
 
 const ProductDetail = lazy(() => import('./components/products/ProductDetail'));
 const Products = lazy(() => import('./components/products/Products'));
@@ -39,6 +40,7 @@ const App = () => {
             }>
               <Route path="products" element={<Products />} />
               <Route path="products/:id" element={<ProductDetail />} />
+              <Route path="products/category/:cat" element={<ByCat />} />
             </Route>
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

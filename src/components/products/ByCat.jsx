@@ -1,13 +1,30 @@
+import { useState } from 'react';
 import apis from '../../lib/apis';
 import CategoryMenu from '../CategoryMenu';
 import SearchBar from '../SearchBar';
 import ProductCard from './ProductCard';
+import { useEffect } from 'react';
+import { useParams } from 'react-router';
 
-const res = await fetch(apis.products);
-const data = await res.json();
-const { products } = data;
 
-export default function Products() {
+
+export default function ByCat() {
+
+    const [products, setProducts] = useState([]);
+
+    const { cat } = useParams();
+
+    console.log('products in Cat',products)
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const res = await fetch(apis.byCategory + cat);
+            const data = await res.json();
+            const { products } = data;
+            setProducts(products);
+        };
+        fetchProducts();
+    }, [cat])
     return (
         <div className="bg-offwhite">
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">

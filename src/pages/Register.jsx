@@ -1,82 +1,117 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import {
     FaUser,
     FaEnvelope,
     FaLock,
     FaPhone,
     FaUserPlus,
-    FaArrowLeft
+    FaArrowLeft,
+    FaEye,
+    FaEyeSlash
 } from 'react-icons/fa';
+import { useMemo } from 'react';
+import PasswordValidator from '../components/auth/register/PasswordValidator';
+import apis from '../lib/apis';
 
 const Register = () => {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: ''
-    });
+    console.log('Register fired');
+
+    const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-        // Clear error when user types
-        if (errors[name]) {
-            setErrors({
-                ...errors,
-                [name]: null
-            });
-        }
-    };
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-    const validate = () => {
-        const newErrors = {};
+    const [showPassword, setShowPassword] = useState(false);
 
-        if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-        if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Email is invalid';
+    const handleFirstNameChange = e => setFirstName(e.target.value);
+
+    const handleLastNameChange = e => setLastName(e.target.value);
+
+    const handleEmailChange = e => setEmail(e.target.value);
+
+    const handlePhoneChange = e => setPhone(e.target.value);
+
+    const handlePasswordChange = e => setPassword(e.target.value);
+
+    const handlePasswordConfirmationChange = e => setPasswordConfirmation(e.target.value);
+
+
+    const firstNameValidator = useMemo(() => {
+
+        console.log('FirstNameValidator fired');
+
+        if (!firstName) {
+            return <p className="mt-1 text-sm text-sky-500">3-15 [a-z , - , _]</p>;
         }
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'Phone number is required';
-        } else if (!/^[0-9]{10,15}$/.test(formData.phone)) {
-            newErrors.phone = 'Phone number is invalid';
+        else if (firstName.length < 3) {
+            return <p className="mt-1 text-sm text-red-500">First name must be at least 3 characters long</p>;
         }
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters';
+        else if (firstName.length > 12) {
+            return <p className="mt-1 text-sm text-red-500">First name must be at most 12 characters long</p>;
+        } else if (!firstName.match(/^[a-z _-]{3,12}$/i)) {
+            return <p className="mt-1 text-sm text-red-500">First name should contain only letter, space, undersocre, or dash</p>;
+        } else {
+            return <p className="mt-1 text-sm text-green-500">First name is valid</p>;
         }
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
+    }, [firstName]);
+
+    const lastNameValidator = useMemo(() => {
+        console.log('LastNameValidator fired');
+
+        if (!lastName) {
+            return <p className="mt-1 text-sm text-sky-500">3-15 [a-z , - , _]</p>;
+        }
+        else if (lastName.length < 3) {
+            return <p className="mt-1 text-sm text-red-500">Last name must be at least 3 characters long</p>;
+        }
+        else if (lastName.length > 12) {
+            return <p className="mt-1 text-sm text-red-500">Last name must be at most 12 characters long</p>;
+        } else if (!lastName.match(/^[a-z _-]{3,12}$/i)) {
+            return <p className="mt-1 text-sm text-red-500">Last name should contain only letter, space, undersocre, or dash</p>;
+        } else {
+            return <p className="mt-1 text-sm text-green-500">Last name is valid</p>;
+        }
+    }, [lastName])
+
+
+
+    const createAccount = async () => {
+        setIsSubmitting(true);
+        const data = {
+            firstName,
+            lastName,
+            email,
+            phone,
+            password,
+            passwordConfirmation
         }
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+        await fetch(apis.register, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (validate()) {
-            setIsSubmitting(true);
-            // Simulate API call
-            setTimeout(() => {
-                console.log('Registration data:', formData);
-                setIsSubmitting(false);
-                // Redirect or show success message
-            }, 1500);
-        }
-    };
+                if (data.id)
+                    navigate('/login')
+            })
+
+    }
+
+
 
     return (
         <div className="min-h-screen bg-offwhite flex items-center justify-center p-4">
@@ -90,7 +125,7 @@ const Register = () => {
                     </h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-pink-700 mb-1">First Name</label>
@@ -98,14 +133,13 @@ const Register = () => {
                                 <FaUser className="absolute left-3 top-3 text-pink-400" />
                                 <input
                                     type="text"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    className={`w-full pl-10 pr-4 py-2 border ${errors.firstName ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                    value={firstName}
+                                    onChange={handleFirstNameChange}
+                                    className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                     placeholder="Jane"
                                 />
                             </div>
-                            {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
+                            {firstNameValidator}
                         </div>
 
                         <div>
@@ -115,14 +149,15 @@ const Register = () => {
                                 <input
                                     type="text"
                                     name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    className={`w-full pl-10 pr-4 py-2 border ${errors.lastName ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                    value={lastName}
+                                    onChange={handleLastNameChange}
+                                    className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                     placeholder="Doe"
                                 />
                             </div>
-                            {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
+                            {lastNameValidator}
                         </div>
+
                     </div>
 
                     <div>
@@ -132,13 +167,13 @@ const Register = () => {
                             <input
                                 type="email"
                                 name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2 border ${errors.email ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                value={email}
+                                onChange={handleEmailChange}
+                                className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                 placeholder="jane@example.com"
                             />
                         </div>
-                        {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+                        {/* {emailError && <p className="mt-1 text-sm text-red-500">{emailError}</p>} */}
                     </div>
 
                     <div>
@@ -148,13 +183,13 @@ const Register = () => {
                             <input
                                 type="tel"
                                 name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2 border ${errors.phone ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                value={phone}
+                                onChange={handlePhoneChange}
+                                className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                 placeholder="1234567890"
                             />
                         </div>
-                        {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
+                        {/* {phoneError && <p className="mt-1 text-sm text-red-500">{phoneError}</p>} */}
                     </div>
 
                     <div>
@@ -162,15 +197,21 @@ const Register = () => {
                         <div className="relative">
                             <FaLock className="absolute left-3 top-3 text-pink-400" />
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2 border ${errors.password ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                value={password}
+                                onChange={handlePasswordChange}
+                                className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                 placeholder="••••••••"
                             />
+                            {
+                                showPassword ?
+                                    <FaEyeSlash onClick={() => setShowPassword(!showPassword)} className="cursor-pointer absolute right-3 top-3 text-pink-400" />
+                                    :
+                                    <FaEye onClick={() => setShowPassword(!showPassword)} className="cursor-pointer absolute right-3 top-3 text-pink-400" />
+                            }
                         </div>
-                        {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+                        {/* {passwordError && <p className="mt-1 text-sm text-red-500">{passwordError}</p>} */}
                     </div>
 
                     <div>
@@ -178,25 +219,26 @@ const Register = () => {
                         <div className="relative">
                             <FaLock className="absolute left-3 top-3 text-pink-400" />
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : "password"}
                                 name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
+                                value={passwordConfirmation}
+                                onChange={handlePasswordConfirmationChange}
+                                className={`w-full pl-10 pr-4 py-2 border ${false ? 'border-red-500' : 'border-pink-300'} rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500`}
                                 placeholder="••••••••"
                             />
                         </div>
-                        {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+                        <PasswordValidator password={password} passwordConfirmation={passwordConfirmation} />
                     </div>
 
                     <button
-                        type="submit"
+                        type="button"
                         disabled={isSubmitting}
+                        onClick={createAccount}
                         className={`w-full mt-6 bg-pink-600 text-white py-3 px-4 rounded-md hover:bg-pink-700 transition-colors ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
                     >
                         {isSubmitting ? 'Creating Account...' : 'Create Account'}
                     </button>
-                </form>
+                </div>
 
                 <div className="mt-4 text-center text-sm text-pink-600">
                     Already have an account?{' '}

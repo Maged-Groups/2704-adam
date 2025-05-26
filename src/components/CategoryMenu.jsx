@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router'; // Using react-router's Link
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import apis from '../lib/apis';
 
-const categories = [
-    { name: 'Dresses', slug: 'dresses', subcategories: ['Casual', 'Evening', 'Summer'] },
-    { name: 'Tops', slug: 'tops', subcategories: ['Blouses', 'T-Shirts', 'Sweaters'] },
-    { name: 'Pants', slug: 'pants', subcategories: ['Jeans', 'Slacks', 'Leggings'] },
-    { name: 'Accessories', slug: 'accessories', subcategories: ['Bags', 'Jewelry', 'Scarves'] },
-];
+const res = await fetch(apis.categories_list);
+const categories = await res.json();
 
 const CategoryMenu = () => {
     const [openCategory, setOpenCategory] = useState(null);
@@ -23,13 +20,13 @@ const CategoryMenu = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {categories.map((category) => (
-                        <div key={category.slug} className="bg-white rounded-lg shadow-md overflow-hidden">
+                        <Link to={`/products/category/${category}`}  key={category} className="bg-white rounded-lg shadow-md overflow-hidden">
                             <button
-                                onClick={() => toggleCategory(category.slug)}
+                                onClick={() => toggleCategory(category)}
                                 className="w-full flex justify-between items-center p-4 text-left hover:bg-pink-50 transition-colors"
                             >
-                                <span className="font-medium text-pink-700">{category.name}</span>
-                                {openCategory === category.slug ? (
+                                <span className="font-medium text-pink-700">{category}</span>
+                                {openCategory === category? (
                                     <FaChevronUp className="text-pink-500" />
                                 ) : (
                                     <FaChevronDown className="text-pink-500" />
@@ -42,7 +39,7 @@ const CategoryMenu = () => {
                                         {category.subcategories.map((subcat) => (
                                             <li key={subcat}>
                                                 <Link
-                                                    to={`/products/${category.slug}/${subcat.toLowerCase()}`}
+                                                    to={`/products/category/${category}`}
                                                     className="block py-2 px-2 text-pink-600 hover:bg-pink-100 rounded transition-colors"
                                                 >
                                                     {subcat}
@@ -51,14 +48,14 @@ const CategoryMenu = () => {
                                         ))}
                                     </ul>
                                     <Link
-                                        to={`/products/${category.slug}`}
+                                        to={`/products/${category}`}
                                         className="mt-3 inline-block text-sm font-medium text-pink-600 hover:underline"
                                     >
-                                        View all {category.name}
+                                        View all {category}
                                     </Link>
                                 </div>
                             )}
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
