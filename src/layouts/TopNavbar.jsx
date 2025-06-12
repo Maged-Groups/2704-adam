@@ -1,23 +1,48 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import SearchBar from '../components/SearchBar';
 import MobileSidebar from '../components/MobileSidebar';
 import { FaShoppingCart, FaUser, FaSignInAlt, FaUserPlus, FaBars, FaHeart } from 'react-icons/fa';
-import WishlistButton from '../components/WishlistButton';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { rdxLoggedout } from '../redux/userReducer';
 
 const TopNavbar = () => {
-    const isLoggedIn = 0;
+
+    const { isLoggedin, user } = useSelector(store => store.userReducer)
+
+ 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [cartItemsCount] = useState(0);
 
+    const dispath = useDispatch();
+    const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+        dispath(rdxLoggedout());
+
+        // Remove ONLY user data from storages
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        
+        
+        // clear local/session storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        navigate('/');
+        // navigate('/login');
+    }
+
     return (
-        <nav className="bg-offwhite text-pink-600 shadow-md">
+        <nav className="bg-offwhite text-pink-600 shadow-md overflow-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
                     {/* Logo and desktop menu */}
                     <div className="flex items-center gap-7">
                         <Link to="/" className="text-2xl font-bold">Jamila Closet</Link>
-                        <div className="hidden md:block ml-10">
+                        <div className="hidden xl:block ml-10">
                             <div className="flex space-x-8">
                                 <Link to="/" className="hover:text-pink-800 px-3 py-2 text-sm font-medium">Home</Link>
                                 <div className="relative group">
@@ -32,19 +57,19 @@ const TopNavbar = () => {
                                 <Link to="/contact" className="hover:text-pink-800 px-3 py-2 text-sm font-medium">Contact</Link>
                             </div>
                         </div>
-                        <div className="hidden md:block mx-4">
+                        <div className="hidden xl:block mx-4">
                             <SearchBar />
                         </div>
                     </div>
 
                     {/* Right side icons */}
-                    <div className="hidden md:flex items-center space-x-4">
-                        {isLoggedIn ? (
+                    <div className="hidden xl:flex items-center space-x-4">
+                        {isLoggedin ? (
                             <>
                                 <Link to="/account" className="hover:text-pink-800 flex items-center">
-                                    <FaUser className="mr-1" /> Account
+                                    <FaUser className="mr-1" /> {user.firstName}
                                 </Link>
-                                <button className="hover:text-pink-800 flex items-center">
+                                <button onClick={handleLogout} className="hover:text-pink-800 flex items-center">
                                     <FaSignInAlt className="mr-1" /> Logout
                                 </button>
                             </>
@@ -74,7 +99,7 @@ const TopNavbar = () => {
                     </div>
 
                     {/* Mobile menu button */}
-                    <div className="md:hidden flex items-center">
+                    <div className="xl:hidden flex items-center">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="text-pink-600 hover:text-pink-800 focus:outline-none"

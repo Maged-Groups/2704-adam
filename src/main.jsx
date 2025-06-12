@@ -12,7 +12,7 @@ import store from './redux/index.js'
 
 createRoot(document.getElementById('root')).render(
 
-  < BrowserRouter >
+  <BrowserRouter>
     <Provider store={store}>
       <App />
     </Provider>

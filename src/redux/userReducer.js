@@ -3,16 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const userReducer = createSlice({
     name: 'userReducer',
     initialState: {
-        user: {
-            firstName: 'adam',
-            lastName: 'sherif',
-            gender: 'male',
-        },
-        token: null,
+        user: null,
         isLoggedin: false
     },
     reducers: {
-        rdxLoggedin: () => { console.log('setUserName function fired') }
+        rdxLoggedin: (state, action) => {
+            state.user = action.payload;
+            state.isLoggedin = true;
+        },
+        rdxLoggedout: (state) => {
+            state.user = null;
+            state.isLoggedin = false;
+        },
+
     }
 });
 // In your wishlistReducer.js
@@ -21,3 +24,5 @@ const userReducer = createSlice({
 
 
 export default userReducer.reducer
+
+export const { rdxLoggedin, rdxLoggedout } = userReducer.actions;

@@ -3,7 +3,7 @@ import { FaHeart } from 'react-icons/fa';
 
 const JamilaClosetLoader = () => {
     return (
-        <div className="fixed inset-0 bg-offwhite bg-opacity-90 flex flex-col items-center justify-center z-50">
+        <div className="fixed inset-0 bg-pink-800/90 flex flex-col items-center justify-center z-50">
             {/* Animated heart logo */}
             <div className="relative">
                 <FaHeart className="text-6xl text-pink-500 animate-pulse" />
